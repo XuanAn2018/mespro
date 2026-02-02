@@ -44,4 +44,4 @@
 ### **Deploy nhanh**
 1. **Clone repository**
    ```bash
-   git clone https://github.com/yourusername/mes-batch-pro.git
+   git clone https://github.com/XuanAn2018/batch-mode-input-hourly-target.git
