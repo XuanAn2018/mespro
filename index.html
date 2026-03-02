@@ -1442,6 +1442,7 @@
                     <option value="P2A1">P2A1</option>
                     <option value="P2B1">P2B1</option>
                     <option value="P2D1">P2D1</option>
+                    <option value="P2D1">P2E1</option>
                 </select>
             </div>
             
@@ -1529,8 +1530,8 @@
             <button class="btn btn-warning btn-xs" onclick="setAllToMorning()">
                 <i class="fas fa-sun"></i> Sáng
             </button>
-            <button class="btn btn-ot btn-xs" onclick="setAllToOT4h()">
-                <i class="fas fa-moon"></i> OT 4h
+            <button class="btn btn-ot btn-xs" onclick="setAllToOT3h()">
+                <i class="fas fa-moon"></i> OT 3h
             </button>
             <button class="btn btn-secondary btn-xs" onclick="resetAllSelections()">
                 <i class="fas fa-redo"></i> Reset
@@ -1763,7 +1764,7 @@
             if (e.target.closest('.btn-tiny')) {
                 const btn = e.target.closest('.btn-tiny');
                 const pkgId = btn.closest('.package-card').id.replace('card-', '');
-                const otMode = btn.textContent.includes('4h') ? '4h' : '11h';
+                const otMode = btn.textContent.includes('3h') ? '3h' : '11h';
                 handleOTModeClick(pkgId, otMode);
                 e.stopPropagation();
             }
@@ -1793,7 +1794,7 @@
             
             // Initialize default config if not exists
             if (!batchConfigs[pkgId]) {
-                batchConfigs[pkgId] = { shift: 'morning', otMode: '4h', hours: 7.5 };
+                batchConfigs[pkgId] = { shift: 'morning', otMode: '3h', hours: 7.5 };
             }
             refreshCardUI(pkgId);
         } else {
@@ -1817,7 +1818,7 @@
         }
         
         if (!batchConfigs[pkgId]) {
-            batchConfigs[pkgId] = { shift: 'morning', otMode: '4h', hours: 7.5 };
+            batchConfigs[pkgId] = { shift: 'morning', otMode: '3h', hours: 7.5 };
         }
         
         batchConfigs[pkgId].shift = shiftType;
@@ -1825,12 +1826,12 @@
         // Set default hours based on shift
         if (shiftType === 'morning') {
             batchConfigs[pkgId].hours = 7.5;
-            batchConfigs[pkgId].otMode = '4h';
+            batchConfigs[pkgId].otMode = '3h';
         } else {
             if (!batchConfigs[pkgId].otMode) {
-                batchConfigs[pkgId].otMode = '4h';
+                batchConfigs[pkgId].otMode = '3h';
             }
-            batchConfigs[pkgId].hours = batchConfigs[pkgId].otMode === '4h' ? 4 : 11;
+            batchConfigs[pkgId].hours = batchConfigs[pkgId].otMode === '3h' ? 3 : 11;
         }
         
         refreshCardUI(pkgId);
@@ -1841,7 +1842,7 @@
         if (!batchConfigs[pkgId]) return;
         
         batchConfigs[pkgId].otMode = otMode;
-        batchConfigs[pkgId].hours = otMode === '4h' ? 4 : 11;
+        batchConfigs[pkgId].hours = otMode === '3h' ? 3 : 11;
         
         refreshCardUI(pkgId);
         updateSummary();
@@ -1870,7 +1871,7 @@
             
             if (cfg.shift === 'ot') {
                 otOpts.querySelectorAll('.btn-tiny').forEach(btn => btn.classList.remove('active'));
-                const activeBtn = otOpts.querySelector(`.btn-tiny${cfg.otMode === '4h' ? ':first-child' : ':last-child'}`);
+                const activeBtn = otOpts.querySelector(`.btn-tiny${cfg.otMode === '3h' ? ':first-child' : ':last-child'}`);
                 if (activeBtn) activeBtn.classList.add('active');
             }
         }
@@ -2135,7 +2136,7 @@
                                value="${config.hours}" step="0.5" min="0.5" max="14">
                     </div>
                     <div class="quick-options ${config.shift === 'morning' ? 'hidden' : ''}" id="ot-opts-${p.id}">
-                        <button class="btn-tiny ${config.otMode === '4h' ? 'active' : ''}">4h Cuối</button>
+                        <button class="btn-tiny ${config.otMode === '3h' ? 'active' : ''}">3h Cuối</button>
                         <button class="btn-tiny ${config.otMode === '11h' ? 'active' : ''}">11h Đều</button>
                     </div>
                 </div>
@@ -2275,15 +2276,15 @@
 
     function setAllToMorning() {
         batchSelected.forEach(pkgId => {
-            batchConfigs[pkgId] = { shift: 'morning', otMode: '4h', hours: 7.5 };
+            batchConfigs[pkgId] = { shift: 'morning', otMode: '3h', hours: 7.5 };
             refreshCardUI(pkgId);
         });
         updateSummary();
     }
 
-    function setAllToOT4h() {
+    function setAllToOT3h() {
         batchSelected.forEach(pkgId => {
-            batchConfigs[pkgId] = { shift: 'ot', otMode: '4h', hours: 4 };
+            batchConfigs[pkgId] = { shift: 'ot', otMode: '3h', hours: 3 };
             refreshCardUI(pkgId);
         });
         updateSummary();
@@ -2417,10 +2418,10 @@
             slotsToFill = morningSlots.slice(0, effectiveSlots);
             
         } else if (shiftType === 'ot') {
-            if (otMode === '4h') {
-                // Chỉ điền 4 slot cuối (OT) - bỏ qua slot dinner
-                const otSlots = [8, 9, 10, 11];
-                const effectiveSlots = Math.min(totalSlots, 4);
+            if (otMode === '3h') {
+                // Chỉ điền 3 slot cuối (OT) - bỏ qua slot dinner
+                const otSlots = [10, 11, 12];
+                const effectiveSlots = Math.min(totalSlots, 3);
                 slotsToFill = otSlots.slice(0, effectiveSlots);
             } else {
                 // 11h đều: điền cả sáng và OT, ưu tiên OT trước
@@ -2501,7 +2502,7 @@
         previewHtml += '<div style="margin-bottom: 15px; padding: 10px; background: #e8f5e9; border-radius: 6px; border: 1px solid #4CAF50; font-size: 13px;">';
         previewHtml += '<strong><i class="fas fa-info-circle"></i> THÔNG TIN PHÂN BỔ:</strong><br>';
         previewHtml += '☀️ <b>Ca Sáng</b>: Tối đa 7.5h (bỏ slot nghỉ trưa)<br>';
-        previewHtml += '🌙 <b>Ca OT 4h</b>: Chỉ slot 9-12<br>';
+        previewHtml += '🌙 <b>Ca OT 3h</b>: Chỉ 3h cuối<br>';
         previewHtml += '🌙 <b>Ca OT 11h</b>: Ưu tiên OT trước, rồi đến sáng<br>';
         previewHtml += '✅ <b>Đảm bảo tổng sản lượng = Target</b>';
         previewHtml += '</div>';
